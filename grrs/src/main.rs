@@ -15,7 +15,7 @@ struct Cli {
 }
 
 fn main() -> Result<()> {
-    env_logger::init();
+    // env_logger::init();
     let args = Cli::from_args();
     debug!("Arguments: {:?}", args);
 
@@ -29,7 +29,7 @@ fn main() -> Result<()> {
             .with_context(|| format!("could not read line"))?;
 
         if content.contains(&args.pattern) {
-            info!("{}", content);
+            println!("{}", content);
         }
     }
     Ok(())
