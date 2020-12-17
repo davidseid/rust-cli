@@ -2,7 +2,7 @@ use std::fs::File;
 use std::io::{prelude:: *, BufReader};
 use structopt::StructOpt;
 use anyhow::{Context, Result};
-use log::{info, debug, warn};
+use log::{debug};
 
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Debug, StructOpt)]
@@ -27,13 +27,22 @@ fn main() -> Result<()> {
         let content = line
             .with_context(|| format!("could not read line"))?;
 
-        find_matches(&content, &args.pattern);
+        find_matches(&content, &args.pattern, &mut std::io::stdout())?;
     }
     Ok(())
 }
 
-fn find_matches(content: &str, pattern: &str) {
-    if content.contains(pattern) {
-        println!("{}", content);
+fn find_matches(line: &str, pattern: &str, mut writer: impl std::io::Write) -> Result<()> {
+    if line.contains(pattern) {
+        writeln!(writer, "{}", line)?;
     }
+    Ok(())
+}
+
+#[test]
+fn find_a_match() -> Result<()> {
+    let mut result = Vec::new();
+    find_matches("lorem ipsum", "lorem", &mut result)?;
+    assert_eq!(result, b"lorem ipsum\n");
+    Ok(())
 }
