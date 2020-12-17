@@ -22,12 +22,13 @@ fn main() {
     let reader = BufReader::new(file);
 
     for line in reader.lines() {
-        if let Ok(line) = line {
-            if line.contains(&args.pattern) {
-                println!("{}", line);
+        match line {
+            Ok(line) => {
+                if line.contains(&args.pattern) {
+                    println!("{}", line);
+                }
             }
-        } else {
-            println!("Error reading line: {:?}", line);
+            Err(error) => println!("Oops: {:?}", error),
         }
     }
 }
