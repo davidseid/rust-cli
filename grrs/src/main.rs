@@ -12,7 +12,7 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Cli::from_args();
     println!("Arguments: {:?}", args);
 
@@ -22,13 +22,11 @@ fn main() {
     let reader = BufReader::new(file);
 
     for line in reader.lines() {
-        match line {
-            Ok(line) => {
-                if line.contains(&args.pattern) {
-                    println!("{}", line);
-                }
-            }
-            Err(error) => println!("Oops: {:?}", error),
+        let content = line?;
+
+        if content.contains(&args.pattern) {
+            println!("{}", content);
         }
     }
+    Ok(())
 }
