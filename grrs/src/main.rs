@@ -1,6 +1,7 @@
 use std::fs::File;
 use std::io::{prelude:: *, BufReader};
 use structopt::StructOpt;
+use anyhow::{Context, Result};
 
 /// Search for a pattern in a file and display the lines that contain it.
 #[derive(Debug, StructOpt)]
@@ -12,7 +13,7 @@ struct Cli {
     path: std::path::PathBuf,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<()> {
     let args = Cli::from_args();
     println!("Arguments: {:?}", args);
 
@@ -22,7 +23,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let reader = BufReader::new(file);
 
     for line in reader.lines() {
-        let content = line?;
+        let content = line
+            .with_context(|| format!("could not read line"))?;
 
         if content.contains(&args.pattern) {
             println!("{}", content);
